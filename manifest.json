@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "word_document_uploader",
+  "name_for_human": "Word文档上传器",
+  "description_for_model": "一个用于上传和解析Word文档(.docx)的插件，可以提取文档内容并返回纯文本格式",
+  "description_for_human": "上传Word文档并提取其中的文本内容",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:3000/openapi.json"
+  },
+  "logo_url": "http://localhost:3000/static/logo.png",
+  "contact_email": "support@example.com",
+  "legal_info_url": "http://localhost:3000/legal"
+}
