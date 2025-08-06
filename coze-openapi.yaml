@@ -1,0 +1,337 @@
+openapi: 3.0.0
+info:
+  title: Word文档上传插件
+  description: 专为Coze智能体设计的Word文档上传和解析插件，支持.docx格式文档的上传、文本提取和内容分析功能。
+  version: 1.0.0
+  contact:
+    name: 插件支持
+    email: support@example.com
+
+servers:
+  - url: https://coze-word-upload-plugin-production.up.railway.app
+    description: 生产服务器
+
+tags:
+  - name: 文档上传
+    description: Word文档上传和处理相关接口
+  - name: 文档查询
+    description: 文档内容查询和管理相关接口
+
+paths:
+  /upload-word:
+    post:
+      summary: 上传Word文档
+      description: 上传.docx格式的Word文档并自动提取其中的文本内容，返回解析后的纯文本和相关统计信息。适用于文档分析、内容提取等场景。
+      operationId: uploadWordDocument
+      tags:
+        - 文档上传
+      requestBody:
+        required: true
+        description: Word文档文件
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: string
+                  format: binary
+                  description: Word文档文件(.docx格式)
+              required:
+                - document
+      responses:
+        '200':
+          description: 文档上传成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: 操作是否成功
+                    example: true
+                  message:
+                    type: string
+                    description: 操作结果消息
+                    example: "Word文档上传成功"
+                  data:
+                    type: object
+                    properties:
+                      fileId:
+                        type: string
+                        description: 文件唯一标识符
+                        example: "abc123def456"
+                      filename:
+                        type: string
+                        description: 原始文件名
+                        example: "示例文档.docx"
+                      content:
+                        type: string
+                        description: 提取的文本内容
+                        example: "这是从Word文档中提取的文本内容..."
+                      wordCount:
+                        type: integer
+                        description: 字数统计
+                        example: 1250
+                      uploadTime:
+                        type: string
+                        format: date-time
+                        description: 上传时间
+                        example: "2024-01-15T10:30:00.000Z"
+        '400':
+          description: 请求错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "请选择要上传的Word文档"
+        '500':
+          description: 服务器错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "文档处理失败"
+
+  /get-document/{fileId}:
+    get:
+      summary: 获取文档内容
+      description: 根据文件ID获取已上传文档的详细内容，包括原始文本、字数统计和上传时间等信息。
+      operationId: getDocument
+      tags:
+        - 文档查询
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          description: 文件唯一标识符
+          schema:
+            type: string
+            example: "abc123def456"
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      fileId:
+                        type: string
+                        description: 文件唯一标识符
+                        example: "abc123def456"
+                      filename:
+                        type: string
+                        description: 原始文件名
+                        example: "示例文档.docx"
+                      content:
+                        type: string
+                        description: 提取的文本内容
+                        example: "这是从Word文档中提取的文本内容..."
+                      wordCount:
+                        type: integer
+                        description: 字数统计
+                        example: 1250
+                      uploadTime:
+                        type: string
+                        format: date-time
+                        description: 上传时间
+                        example: "2024-01-15T10:30:00.000Z"
+        '404':
+          description: 文档未找到
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "文档未找到"
+
+  /documents:
+    get:
+      summary: 获取文档列表
+      description: 获取所有已上传文档的列表信息，包括文件名、字数统计和上传时间。
+      operationId: getDocumentList
+      tags:
+        - 文档查询
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fileId:
+                          type: string
+                          description: 文件唯一标识符
+                          example: "abc123def456"
+                        filename:
+                          type: string
+                          description: 原始文件名
+                          example: "示例文档.docx"
+                        wordCount:
+                          type: integer
+                          description: 字数统计
+                          example: 1250
+                        uploadTime:
+                          type: string
+                          format: date-time
+                          description: 上传时间
+                          example: "2024-01-15T10:30:00.000Z"
+
+  /delete-document/{fileId}:
+    delete:
+      summary: 删除文档
+      description: 根据文件ID删除已上传的文档及其相关数据。
+      operationId: deleteDocument
+      tags:
+        - 文档查询
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          description: 文件唯一标识符
+          schema:
+            type: string
+            example: "abc123def456"
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "文档删除成功"
+        '404':
+          description: 文档未找到
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "文档未找到"
+        '500':
+          description: 服务器错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "删除文档失败"
+
+  /health:
+    get:
+      summary: 健康检查
+      description: 检查插件服务的运行状态。
+      operationId: healthCheck
+      tags:
+        - 系统
+      responses:
+        '200':
+          description: 服务正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                    example: "Word文档上传插件运行正常"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-01-15T10:30:00.000Z"
+
+components:
+  schemas:
+    DocumentInfo:
+      type: object
+      properties:
+        fileId:
+          type: string
+          description: 文件唯一标识符
+        filename:
+          type: string
+          description: 原始文件名
+        content:
+          type: string
+          description: 提取的文本内容
+        wordCount:
+          type: integer
+          description: 字数统计
+        uploadTime:
+          type: string
+          format: date-time
+          description: 上传时间
+      required:
+        - fileId
+        - filename
+        - content
+        - wordCount
+        - uploadTime
+
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 操作是否成功
+        message:
+          type: string
+          description: 操作结果消息
+        data:
+          type: object
+          description: 返回的数据
+      required:
+        - success
