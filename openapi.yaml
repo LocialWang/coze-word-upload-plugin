@@ -8,8 +8,8 @@ info:
     email: support@example.com
 
 servers:
-  - url: http://localhost:3000
-    description: 本地开发服务器
+  - url: https://coze-word-upload-plugin-production.up.railway.app
+    description: 生产服务器
 
 tags:
   - name: 文档上传
