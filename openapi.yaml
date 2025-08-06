@@ -240,8 +240,8 @@ paths:
                   message:
                     type: string
                     example: "文档删除成功"
-        '404':
-          description: 文档未找到
+        '200':
+          description: 操作成功（文档可能不存在）
           content:
             application/json:
               schema:
@@ -249,10 +249,10 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: false
+                    example: true
                   message:
                     type: string
-                    example: "文档未找到"
+                    example: "文档不存在或已删除"
         '500':
           description: 服务器错误
           content:
